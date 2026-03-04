@@ -1,7 +1,7 @@
 12 pad capactitive touch "DJ Board" with CircuitPython
-Demo:
+Demo: [![Watch on YouTube](https://img.youtube.com/vi/b_Bwa0U3C7c/hqdefault.jpg)](https://youtube.com/shorts/b_Bwa0U3C7c)
 
-Build Video:
+Build Video: Coming soon...
 
 More Tutorials: https://YouTube.com/@BuildWithProfG
 
