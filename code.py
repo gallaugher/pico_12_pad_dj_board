@@ -22,7 +22,8 @@ CHANNELS     = 1
 NUM_VOICES   = 3 # simultaneous sound play
 MIXER_BUFFER = 4096   # mixer's internal DMA buffer (bytes)
 # Per-pad SD read buffer — max 1024
-WAVE_BUFFER_SIZE = 512
+# WAVE_BUFFER_SIZE = 512
+WAVE_BUFFER_SIZE = 1024
 
 # DAC setup
 audio = audiobusio.I2SOut(
@@ -74,7 +75,8 @@ sounds = [
 
 # microSD card setup - assumes Adalogger Cowbell
 spi0   = busio.SPI(board.GP18, board.GP19, board.GP16)
-sdcard = sdcardio.SDCard(spi0, SD_CS)
+# sdcard = sdcardio.SDCard(spi0, SD_CS)
+sdcard = sdcardio.SDCard(spi0, SD_CS, baudrate=8_000_000)
 vfs    = storage.VfsFat(sdcard)
 
 try:
@@ -92,6 +94,14 @@ pads      = [Button(t, value_when_pressed=True) for t in touch_pad] # Debounced
 NUM_PADS       = 12
 pad_last_press = [0.0] * NUM_PADS
 PAD_COOLDOWN   = 0.2   # seconds — prevents rapid-fire SPI bus hammering
+# Global cooldown throttles rapid cross-pad tapping — the main crash trigger.
+# PAD_COOLDOWN is per-pad, so hammering different pads in quick succession
+# bypasses it entirely. This adds a board-wide minimum gap between any two
+# start_sound() calls, giving the SPI bus time to finish each seek/WaveFile
+# reconstruction before the next one begins. 50 ms is imperceptible to a
+# human performer but enough to prevent SPI bus contention crashes.
+last_any_press  = 0.0
+GLOBAL_COOLDOWN = 0.05  # seconds — min gap between any two pad presses
 
 # Pre-open WAV files at startup
 # Each pad gets one permanent file handle, one permanent read buffer, and one
@@ -146,9 +156,13 @@ def stop_sound(pad_idx):
         print(f"■ Pad {pad_idx} stopped")
 
 def start_sound(pad_idx):
+    global last_any_press
     if wav_files[pad_idx] is None:
         return
     now = time.monotonic()
+    # Check global cooldown first — if any pad was just started, wait.
+    if now - last_any_press < GLOBAL_COOLDOWN:
+        return
     if now - pad_last_press[pad_idx] < PAD_COOLDOWN:
         return
 
@@ -168,6 +182,7 @@ def start_sound(pad_idx):
     pad_voice[pad_idx]      = v
     voice_used[v]           = True
     pad_last_press[pad_idx] = now
+    last_any_press          = now   # update global timestamp on successful start
     print(f"▶ Pad {pad_idx} → voice {v}")
 
 # Watchdog - will restart board in event of hang/crash
