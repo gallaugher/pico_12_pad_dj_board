@@ -20,3 +20,5 @@ So that all my students have speaker components, we use very low-cost (and lower
 - Connect amp to breadboard - JST SH Compatible 1mm Pitch 3 Pin to Premium Male Headers Cable - 100mm long - https://www.adafruit.com/product/5755
 
 Wiring diagram if you use the speaker setup above, otherwise eliminate the speaker & amp and plug your speaker into the jack in the DAC board
+<img width="1886" height="1031" alt="wiring diagram" src="https://github.com/user-attachments/assets/191939dd-922e-4444-991a-0e0e4bfcc840" />
+
