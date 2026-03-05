@@ -5,6 +5,8 @@ Build Video: Coming soon...
 
 More Tutorials: https://YouTube.com/@BuildWithProfG
 
+Sounds are wav files adapted from free downloads you can find at: https://cymatics.fm/ Be sure to save files for CircuitPython as: mono (not stereo), sample rate: 22050 Hz, 16 bit (you can lower these settings, but you then need to modify the code). 
+
 Components:
 - Raspberry Pi Pico 2 (I used a 2w, which is the board for my class. Not tested on original Pico, which is less powerful)
 - Adafruit Adalogger Cowbell (provides STEMMA-QT port & microSD card) - I recommend pre-soldered version, otherwise get the headers & prepare for soldering - https://www.adafruit.com/product/6355
